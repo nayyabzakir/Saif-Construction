@@ -166,7 +166,7 @@
                                                 <span class="solid">D.O.B:</span>
 
                                                 <span class="liquid">
-                                                    <t t-esc="o.birthday"/>
+                                                    <t t-esc="time.strftime('%d-%m-%Y',time.strptime(o.birthday,'%Y-%m-%d'))"/>
                                                 </span>
                                             </p>
 
@@ -174,7 +174,7 @@
                                                 <span class="solid">D.O.J:</span>
 
                                                 <span class="liquid">
-                                                    <t t-esc="o.doj"/>
+                                                    <t t-esc="time.strftime('%d-%m-%Y',time.strptime(o.doj,'%Y-%m-%d'))"/>
                                                 </span>
                                             </p> 
 
@@ -282,9 +282,8 @@
 
                                             <p class="gm mb0"><b>Signature of the Employee</b></p>
 
-                                            <p>I hereby confirm that i will abide by the rules and ragulations of the company. And i futher agree that company has right to terminate my service without any notice. </p>
+                                            <p>I hereby confirm that I will abide by the rules and regulations of the company. And I further agree that company has right to terminate my service without any prior notice. </p>
 
-                                            <p class="gm mb0"><b>Signature of the employee</b></p>
 
                                         </div>
 

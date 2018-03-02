@@ -9,12 +9,27 @@ class MB_Project_Extension(models.Model):
 
 	f_name = fields.Char("Father Name")
 	cnic = fields.Char("CNIC")
+	city_id = fields.Char("City")
+	country = fields.Char("Country")
 	religion = fields.Char("Religion")
-	doj = fields.Date("D.O.J")
+	doj = fields.Date("D.O.J",required=True)
 	e_contact = fields.Char("Contact")
 	per_address = fields.Text("Permanent Address")
 	tem_address = fields.Text("Temporary Address")
 	emp_link = fields.One2many('ext.employee','emp_filed')
+	seq_id = fields.Char(string="Employee Sequence",readonly=True)
+	gender = fields.Selection(
+		[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')], string="Gender")
+	marital = fields.Selection(
+		[('Single', 'Single'), ('Married', 'Married'), ('Widower', 'Widower'),('Divorced', 'Divorced')], string="Marital Status")
+
+
+	@api.model
+	def create(self, vals):
+		vals['seq_id'] = self.env['ir.sequence'].next_by_code('mem.seq')
+		new_record = super(MB_Project_Extension, self).create(vals)
+
+		return new_record
 
 
 	@api.multi

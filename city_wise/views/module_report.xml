@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+
+    <data>   
+
+        <template id="customer_report">
+
+            <t t-call="report.html_container">
+                <t t-call="report.external_layout">
+                    <!-- <t t-foreach="count" t-as="o"> -->
+
+                    <div class="page">
+
+                        <style>
+
+                            .main-data {
+                                width: 100%;
+                            }
+                            .center-data {
+                                width: 1000px;
+                                margin: 0px auto;
+                            }
+                            table, td, th {
+                                border: 1px solid;
+                                border-collapse: collapse;
+                                text-align: left;
+                                padding: 8px;
+                                padding-left: 15px;
+                            }
+                            h2  {
+                                text-align: center;
+                            }
+
+                        </style>
+
+                        <div class="main-data">
+
+                            <div class="center-data">
+                                <h2>CUSTOMER CITY WISE</h2>
+                                <table width="100%">
+
+                                    <tr>
+                                        <th>Customer </th>
+                                        <th>Amount</th>
+                                    </tr>
+
+                                    <t t-foreach="city" t-as="o">
+
+                                        <tr>
+                                            <td colspan="2" style="text-align:center">
+                                                <b><span t-esc="o"></span></b>
+                                            </td>
+                                        </tr>
+
+                                        <t t-esc="get_cust(o)"/>
+                                        <t t-foreach="cust" t-as="line">
+
+                                            <tr>
+                                                <td>
+                                                    <span t-esc="line.name"></span>
+                                                </td>
+                                                <td>
+                                                    <span t-esc="get_bal(line.id)"></span>
+                                                </td>
+                                            </tr>
+
+                                        </t>
+
+                                    </t>
+
+                                </table>
+                    
+                    
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- </t> -->
+
+                </t>
+            </t>
+
+        </template>
+
+    </data>
+
+</openerp>

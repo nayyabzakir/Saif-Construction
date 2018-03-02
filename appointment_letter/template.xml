@@ -7,6 +7,6 @@
             name="appointment_letter.appointment_letter"
             file="appointment_letter.appointment_letter"
             report_type="qweb-html"
-            string="Appointment Letter"/> 
+            string="Letter"/> 
     </data>
 </openerp>

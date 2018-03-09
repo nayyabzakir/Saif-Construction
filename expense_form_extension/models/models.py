@@ -95,6 +95,22 @@ class account_bank_extension(models.Model):
 	_inherit = 'account.bank.statement'
 
 	proj = fields.Many2one('project.project',string='Project', required=True)
+	check = fields.Boolean(compute="check_status")
+	hide_bol = fields.Boolean()
+
+	@api.one
+	def check_status(self):
+		users = self.env['res.users'].search([('id','=',self._uid)])
+		if users.branch_user == True:
+			self.check = True
+
+	@api.onchange('name')
+	def get_proj(self):
+		users = self.env['res.users'].search([('id','=',self._uid)])
+		if users.branch_user == True:
+			self.proj = users.proj.id
+			self.hide_bol = True
+
 
 	@api.multi
 	def post(self):
@@ -119,6 +135,7 @@ class account_bank_extension(models.Model):
 						'name':x.name,
 						'voucher_no':x.voucher_no,
 						'payess_name':x.payess_name.id,
+						'proj':x.proj.id,
 						'debit':x.received,
 						'credit':0.0,
 						'move_id':create_journal.id,
@@ -130,6 +147,7 @@ class account_bank_extension(models.Model):
 						'name':x.name,
 						'voucher_no':x.voucher_no,
 						'payess_name':x.payess_name.id,
+						'proj':x.proj.id,
 						'debit':0.0,
 						'credit':x.received,
 						'move_id':create_journal.id,
@@ -146,6 +164,7 @@ class account_bank_extension(models.Model):
 						'name':x.name,
 						'voucher_no':x.voucher_no,
 						'payess_name':x.payess_name.id,
+						'proj':x.proj.id,
 						'debit':0.0,
 						'credit':x.paid,
 						'move_id':create_journal.id,
@@ -157,6 +176,7 @@ class account_bank_extension(models.Model):
 						'name':x.name,
 						'voucher_no':x.voucher_no,
 						'payess_name':x.payess_name.id,
+						'proj':x.proj.id,
 						'debit':x.paid,
 						'credit':0.0,
 						'move_id':create_journal.id,
@@ -167,13 +187,15 @@ class account_bank_extension(models.Model):
 
 	@api.model
 	def create(self, vals):
+		new_record = super(account_bank_extension, self).create(vals)
 		rec = self.env['account.bank.statement'].search([])
 		for x in rec:
-			for y in x.line_ids:
-				if y.e_check == False:
-					raise  ValidationError('Post Pending Enteries In Previous Cash Books')
+			if x.proj.id == new_record.proj.id:
+				for y in x.line_ids:
+					if y.statement_id.id != new_record.id:
+						if y.e_check == False:
+							raise  ValidationError('Post Pending Enteries In Previous Cash Books')
 
-		new_record = super(account_bank_extension, self).create(vals)
 		return new_record
 
 
@@ -185,9 +207,19 @@ class account_bank_extension_line(models.Model):
 	payess_name = fields.Many2one('res.partner',string="Payees Name")
 	account = fields.Many2one('account.account',string="Account")
 	ecube_journal = fields.Many2one('account.move',string="Journal")
+	proj = fields.Many2one('project.project',string='Project')
 	e_check = fields.Boolean()
+	check_val = fields.Boolean()
 	paid = fields.Float(string='Paid')
 	received = fields.Float(string='Received')
+
+	@api.onchange('date')
+	def get_hide(self):
+		users = self.env['res.users'].search([('id','=',self._uid)])
+		if users.branch_user == True:
+			self.check_val = True
+
+
 	
 	@api.onchange('paid')
 	def paid_amount(self):
@@ -214,6 +246,8 @@ class account_bank_extension_line(models.Model):
 
 
 
+
+
 	# employee = fields.Many2one('hr.employee',string="Employee")
 
 	# @api.multi
@@ -232,6 +266,8 @@ class account_move_line(models.Model):
 
 	voucher_no = fields.Char(string="Voucher No.")
 	payess_name = fields.Many2one('res.partner',string="Payees Name")
+	proj = fields.Many2one('project.project',string='Project')
+
 	# employee = fields.Many2one('hr.employee',string="Employee")
 
 class account_move_extend(models.Model):
@@ -253,6 +289,14 @@ class account_move_extend(models.Model):
 		# if len(self._cr.fetchall()) != 0:
 		#     raise UserError(_("Cannot create unbalanced journal entry."))
 		return True
+
+
+
+class user_extend(models.Model):
+	_inherit = 'res.users'
+
+	proj = fields.Many2one('project.project',string='Project')
+	branch_user = fields.Boolean(string="Branch User") 
 
 
 	

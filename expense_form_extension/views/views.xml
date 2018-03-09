@@ -76,15 +76,24 @@
         <field name="type">form</field> 
         <field name="arch" type="xml">
             <xpath expr="//field[@name ='date']" position="after">
-            <field name="proj"/>
+            <field name="proj" attrs="{'readonly':['|',('check','=', True),('hide_bol','=', True)]}"/>
+            <field name="check" invisible="1"/>
+            <field name="hide_bol" invisible="1"/>
             </xpath>
+
+            <xpath expr="//field[@name ='line_ids']" position="attributes">
+                <attribute name="context">{'default_proj':proj}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='line_ids']/tree/field[@name='partner_id']" position="after">
 
               <field name="voucher_no" attrs="{'readonly':[('e_check','=', True)]}"/>
               <field name="payess_name" domain="[('supplier','=',True)]" attrs="{'readonly':[('e_check','=', True)]}"/>
               <field name="account" attrs="{'readonly':[('e_check','=', True)]}"/>
+              <field name="proj" attrs="{'readonly':['|',('check_val','=', True),('e_check','=', True)]}"/>
               <field name="ecube_journal" readonly="1"/>
               <field name="e_check" invisible="1"/>
+              <field name="check_val" invisible="1" />
               <!-- <field name="employee" invisible="1"/> -->
 
             </xpath>
@@ -92,7 +101,7 @@
             <xpath expr="//field[@name='line_ids']/tree/field[@name='ref']" position="after">
 
 	            <field name="paid" attrs="{'readonly':[('e_check','=', True )]}"/>
-	            <field name="received" attrs="{'readonly':[('e_check','=', True )]}"/>
+	            <field name="received" attrs="{'readonly':['|',('e_check','=', True ),('check_val','=', True )]}"/>
 
 	        </xpath>
 
@@ -122,7 +131,7 @@
             </xpath>
 
             <xpath expr="//button[@name='289']" position="replace">
-                <button name="post" type="object" string="Post Enteries" class="oe_highlight"/>
+                <button name="post" type="object" string="Post Enteries" class="oe_highlight" attrs="{'invisible':[('hide_bol','=', True)]}"/>
             </xpath>
 
         </field>
@@ -142,12 +151,25 @@
 
               <field name="voucher_no" />
               <field name="payess_name" />
+              <field name="proj" />
               <!-- <field name="employee" invisible="1"/> -->
 
             </xpath>
             
 
         </field>
+    </record>
+
+    <record id="user_form_view"   model="ir.ui.view"> 
+        <field name="name">user_form_view</field> 
+        <field name="model">res.users</field> 
+        <field name="inherit_id" ref="base.view_users_form"/> 
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+              <field name="proj"/>   
+              <field name="branch_user"/>   
+            </xpath>
+        </field> 
     </record>
 
 
